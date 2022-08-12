@@ -1,4 +1,5 @@
 import fileinput
+import json
 import re
 from random import shuffle, randint, choice
 from tkinter import *
@@ -6,6 +7,25 @@ from tkinter.ttk import *
 from tkinter import messagebox
 
 import pyperclip
+
+#Find the website information
+def find_password():
+    website = website_input.get()
+    try:
+        with open("passwd_manager.json") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        messagebox.showinfo(title="Error", message="No Data File Found")
+
+    else:
+        if website in data.keys():
+            username = data[website]["username"]
+            password = data[website]["password"]
+            messagebox.showinfo(title=website, message=f"Username: {username}\nPassword: {password}")
+        else:
+            messagebox.showinfo(title="Error", message=f"No details for {website} exists.")
+
+
 
 # get line number of existed account
 def getExistedLine(website, passwd, username):
@@ -72,6 +92,10 @@ def save():
     website = website_input.get()
     username = username_input.get()
     passwd = password_input.get()
+    new_passwd = {website: {
+        "username" : username,
+        "password" : passwd,
+    }}
 
     if len(website) == 0 or len(username) == 0 or len(passwd) == 0:
         messagebox.showinfo(title="Oops", message="Please make sure you haven't left any fields empty.")
@@ -79,7 +103,23 @@ def save():
         is_ok = messagebox.askokcancel(title=website, message=f"These are the details entered: \nEmail: {username} "
                                                               f"\nPassword: {passwd} \nIs it ok to save?")
         if is_ok:
-            replacement = ""
+            #update JSON
+            try:
+                with open(file="passwd_manager.json", mode="r") as file:
+                    data = json.load(file)
+                    print(data)
+            except:
+                with open(file="passwd_manager.json", mode="w") as file:
+                    json.dump(new_passwd, file, indent=4)
+            else:
+                data.update(new_passwd)
+
+                with open(file="passwd_manager.json", mode="w") as file:
+                    #Saving updated data
+                    json.dump(data, file, indent=4)
+
+
+            #Update the text file
             with open("passwd_manager.txt", "a") as file:
                 print(f"{website}|{username}|{passwd}")
                 exists_line_number = getExistedLine(website, passwd, username)
@@ -119,9 +159,9 @@ password_label = Label(text="Password", font=("Arial", 10))
 password_label.grid(row=3, column=0, sticky=E)
 
 # Input
-website_input = Entry(width=35)
-website_input.grid(row=1, column=1, sticky=W, columnspan=2, pady=1)
-username_input = Entry(master=window, width=35)
+website_input = Entry(width=21)
+website_input.grid(row=1, column=1, sticky=W, columnspan=1, pady=1)
+username_input = Entry(master=window, width=36)
 username_input.grid(row=2, column=1, sticky=W, columnspan=2, pady=1)
 username_input.insert(0, "angela@gmail.com")
 reg = window.register(callback)
@@ -131,9 +171,11 @@ password_input = Entry(width=21)
 password_input.grid(row=3, column=1, sticky=W, columnspan=1, pady=1)
 
 # Buttons
+search_button = Button(text="Search", command=find_password)
+search_button.grid(row=1, column=2, sticky=E, columnspan=1)
 generate_password_button = Button(text="Generate", command=generate_password)
-generate_password_button.grid(row=3, column=2, sticky=W, columnspan=1, pady=1)
+generate_password_button.grid(row=3, column=2, sticky=E, columnspan=1, pady=1)
 add_button = Button(text="Add", width=35, command=save)
-add_button.grid(row=4, column=1, columnspan=2, sticky=W, pady=1)
+add_button.grid(row=4, column=1, columnspan=2, sticky=E, pady=1)
 
 window.mainloop()
