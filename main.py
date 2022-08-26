@@ -1,16 +1,24 @@
-# This is a sample Python script.
+import smtplib
+import datetime as dt
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+now = dt.datetime.now()
 
+year = now.year
+month = now.month
+day = now.day
+print(f"{year}/{month}/{day}")
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+day_of_week = now.weekday()
+print(day_of_week)
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+weekday = now.weekday()
+print(weekday)
+print(now)
+print(smtplib.SMTP_PORT)
+#my_email = "thanhbuynitu@gmail.com"
+#passw = "yxjgezqowsjqvfcz"
+#connection = smtplib.SMTP("smtp.gmail.com")
+#connection.starttls()
+#connection.login(user=my_email, password=passw)
+#connection.sendmail(from_addr=my_email, to_addrs="buynlt159@gmail.com", msg="Sent from my IDE. Hehe")
+#connection.close()
